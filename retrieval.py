@@ -1,6 +1,7 @@
 import requests
 
-import nltk
+import spacy
+nlp = spacy.load('en_core_web_sm')
 
 def get_top_posts(num):
     url = f"https://www.reddit.com/r/photoshopbattles/top/.json?limit={num}"
@@ -18,8 +19,6 @@ def get_top_posts(num):
 
 
 def noun_from_title(title):
-    tokens = nltk.word_tokenize(title)
-    tagged = nltk.pos_tag(tokens)
-    nouns = [word for (word, pos) in tagged if (lambda x: x == 'NN')(pos)]
-    nouns.extend([word for (word, pos) in tagged if (lambda x: x[:2] == 'NN')(pos)])
-    return nouns[0]
+    doc = nlp(title)
+    nps = [chunk for chunk in doc.noun_chunks]
+    return nps[0].root
